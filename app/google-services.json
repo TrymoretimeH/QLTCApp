@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "5628721266",
+    "project_id": "qltcapp-cfa57",
+    "storage_bucket": "qltcapp-cfa57.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:5628721266:android:6cf10dc313a9f4669f6aeb",
+        "android_client_info": {
+          "package_name": "com.example.qltc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3AJKlDnUlsZCRh_IaZa8o_kOV0YIQRtE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Quản lý tài chính</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">404 NOT FOUND</string>
+</resources>
