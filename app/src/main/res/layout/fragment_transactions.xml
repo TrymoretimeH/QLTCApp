@@ -31,8 +31,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="May 17, 2023"
+            android:text="May 17, 2024"
             android:textColor="@color/white"
+            android:textStyle="bold"
             android:textSize="16sp" />
 
         <ImageView
@@ -49,10 +50,11 @@
         android:layout_height="wrap_content"
         android:background="@color/orange"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
         app:tabIndicatorColor="@color/white"
-        app:tabMode="scrollable"
+        app:tabMode="fixed"
         app:tabTextColor="@color/white">
 
         <com.google.android.material.tabs.TabItem
@@ -70,15 +72,15 @@
             android:layout_height="wrap_content"
             android:text="Năm" />
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tổng quan" />
+        <!--        <com.google.android.material.tabs.TabItem-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="Tổng quan" />-->
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ghi chú" />
+        <!--        <com.google.android.material.tabs.TabItem-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="Ghi chú" />-->
     </com.google.android.material.tabs.TabLayout>
 
     <LinearLayout
@@ -103,6 +105,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:textStyle="bold"
                 android:text="Thu nhập" />
 
             <TextView
@@ -127,6 +130,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:textStyle="bold"
                 android:text="Chi tiêu" />
 
             <TextView
@@ -151,6 +155,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:textStyle="bold"
                 android:text="Tổng" />
 
             <TextView
@@ -168,9 +173,10 @@
         android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:clickable="true"
+        android:focusable="true"
         app:backgroundTint="@color/orange"
         app:layout_constraintBottom_toBottomOf="@+id/transactionsList"
         app:layout_constraintEnd_toEndOf="parent"
@@ -197,5 +203,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/transactionsList"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        app:srcCompat="@drawable/empty_state" />
+        android:src="@drawable/not_found"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

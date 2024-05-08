@@ -112,6 +112,18 @@ public class MainViewModel extends AndroidViewModel {
                     .lessThan("date", endTime)
                     .equalTo("type", type)
                     .findAll();
+        } else if(Constants.SELECTED_TAB == Constants.YEARLY) {
+            calendar.set(Calendar.DAY_OF_YEAR, 0);
+
+            Date startTime = calendar.getTime();
+
+            calendar.add(Calendar.YEAR, 1);
+            Date endTime = calendar.getTime();
+
+            newTransactions = realm.where(Transaction.class)
+                    .greaterThanOrEqualTo("date", startTime)
+                    .lessThan("date", endTime)
+                    .findAll();
         }
         categoriesTransactions.setValue(newTransactions);
     }
@@ -207,6 +219,38 @@ public class MainViewModel extends AndroidViewModel {
 //                    e.printStackTrace();
 //                }
 //            });
+            newTransactions = realm.where(Transaction.class)
+                    .greaterThanOrEqualTo("date", startTime)
+                    .lessThan("date", endTime)
+                    .findAll();
+
+            income = realm.where(Transaction.class)
+                    .greaterThanOrEqualTo("date", startTime)
+                    .lessThan("date", endTime)
+                    .equalTo("type", Constants.INCOME)
+                    .sum("amount")
+                    .intValue();
+
+            expense = realm.where(Transaction.class)
+                    .greaterThanOrEqualTo("date", startTime)
+                    .lessThan("date", endTime)
+                    .equalTo("type", Constants.EXPENSE)
+                    .sum("amount")
+                    .intValue();
+
+            total = realm.where(Transaction.class)
+                    .greaterThanOrEqualTo("date", startTime)
+                    .lessThan("date", endTime)
+                    .sum("amount")
+                    .intValue();
+        } else if(Constants.SELECTED_TAB == Constants.YEARLY) {
+            calendar.set(Calendar.DAY_OF_YEAR,0);
+
+            Date startTime = calendar.getTime();
+
+            calendar.add(Calendar.YEAR,1);
+            Date endTime = calendar.getTime();
+
             newTransactions = realm.where(Transaction.class)
                     .greaterThanOrEqualTo("date", startTime)
                     .lessThan("date", endTime)

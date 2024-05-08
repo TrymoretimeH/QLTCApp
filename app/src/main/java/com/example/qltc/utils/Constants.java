@@ -16,7 +16,7 @@ public class Constants {
 
     public static int DAILY = 0;
     public static int MONTHLY = 1;
-    public static int CALENDAR = 2;
+    public static int YEARLY = 2;
     public static int SUMMARY = 3;
     public static int NOTES = 4;
 

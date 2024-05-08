@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Objects;
 
 import io.realm.RealmResults;
+import io.realm.internal.Util;
 
 public class TransactionsFragment extends Fragment {
     private final DecimalFormat df = Constants.getVNFormat();
@@ -64,6 +65,8 @@ public class TransactionsFragment extends Fragment {
                 calendar.add(Calendar.DATE, 1);
             } else if(Constants.SELECTED_TAB == Constants.MONTHLY) {
                 calendar.add(Calendar.MONTH, 1);
+            } else if(Constants.SELECTED_TAB == Constants.YEARLY) {
+                calendar.add(Calendar.YEAR, 1);
             }
             updateDate();
         });
@@ -73,6 +76,8 @@ public class TransactionsFragment extends Fragment {
                 calendar.add(Calendar.DATE, -1);
             } else if(Constants.SELECTED_TAB == Constants.MONTHLY) {
                 calendar.add(Calendar.MONTH, -1);
+            } else if(Constants.SELECTED_TAB == Constants.YEARLY) {
+                calendar.add(Calendar.YEAR, -1);
             }
             updateDate();
         });
@@ -91,6 +96,10 @@ public class TransactionsFragment extends Fragment {
                     updateDate();
                 } else if(Objects.equals(tab.getText(), "Ngày")) {
                     Constants.SELECTED_TAB = 0;
+                    calendar.setTime(currentCal.getTime());
+                    updateDate();
+                } else if(Objects.equals(tab.getText(), "Năm")) {
+                    Constants.SELECTED_TAB = 2;
                     calendar.setTime(currentCal.getTime());
                     updateDate();
                 }
@@ -159,6 +168,8 @@ public class TransactionsFragment extends Fragment {
             binding.currentDate.setText(Helper.formatDate(calendar.getTime()));
         } else if(Constants.SELECTED_TAB == Constants.MONTHLY) {
             binding.currentDate.setText(Helper.formatDateByMonth(calendar.getTime()));
+        } else if(Constants.SELECTED_TAB == Constants.YEARLY) {
+            binding.currentDate.setText(Helper.formatDateByYear(calendar.getTime()));
         }
         viewModel.getTransactions(calendar);
     }

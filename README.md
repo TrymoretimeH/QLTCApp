@@ -31,7 +31,7 @@
 5. Android Studio will import the project and download any necessary dependencies.
 
 ## Installation (User)
-- Download the app APK file
+- Download the app APK file (qltc-app.apk)
 
 
 ## License
