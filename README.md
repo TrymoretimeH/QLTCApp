@@ -14,16 +14,15 @@
 ## Login using Firebase Auth
 - Authorize email after registration
 
-## Every data is stored in your local machine so feel free to use it
+## Every data is stored in Firebase database so you can use it on multiple devices with internet
 
 ## Technologies Used
 - **Frontend**: XML
-- **Backend**: JAVA, MongoDB
-- **Database**: Realm
-- **Code Structure**: MVVM Arcitecture
+- **Backend**: JAVA
+- **Database**: Firebase
+- **Code Structure**: MVVM Architecture
 
 ## Installation (Dev)
-
 1. Clone the repository
 2. Open Android Studio.
 3. Select "Open an Existing Project" from the welcome screen.
