@@ -2,38 +2,56 @@ package com.example.qltc.views.fragments;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.qltc.R;
 import com.example.qltc.adapters.AccountsAdapter;
 import com.example.qltc.adapters.CategoryAdapter;
-import com.example.qltc.databinding.FragmentAddTransactionBinding;
-import com.example.qltc.databinding.ListDialogBinding;
 import com.example.qltc.models.Account;
 import com.example.qltc.models.Category;
 import com.example.qltc.models.Transaction;
 import com.example.qltc.utils.Constants;
 import com.example.qltc.utils.Helper;
+import com.example.qltc.utils.Utility;
 import com.example.qltc.views.activites.MainActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Objects;
 
 public class AddTransactionFragment extends BottomSheetDialogFragment {
+    private TextView incomeBtn, expenseBtn;
+    private TextInputEditText date, amount, category, account, note;
+    private Button saveTransactionBtn;
+    public interface OnAddedTransactionListener {
+        void onAddedTransaction();
+    }
+
+    private OnAddedTransactionListener listener;
+
 
     public AddTransactionFragment() {
         // Required empty public constructor
+    }
+
+    public AddTransactionFragment(OnAddedTransactionListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -41,36 +59,38 @@ public class AddTransactionFragment extends BottomSheetDialogFragment {
         super.onCreate(savedInstanceState);
     }
 
-    FragmentAddTransactionBinding binding;
-    Transaction transaction;
+    private Transaction transaction = new Transaction();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentAddTransactionBinding.inflate(inflater);
+        return inflater.inflate(R.layout.fragment_add_transaction, container, false);
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        transaction = new Transaction();
-
-        binding.incomeBtn.setOnClickListener(view -> {
-            binding.incomeBtn.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.income_selector));
-            binding.expenseBtn.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.default_selector));
-            binding.expenseBtn.setTextColor(requireContext().getColor(R.color.textColor));
-            binding.incomeBtn.setTextColor(requireContext().getColor(R.color.greenColor));
+        initView(view);
+        incomeBtn.setOnClickListener(v -> {
+            incomeBtn.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.income_selector));
+            expenseBtn.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.default_selector));
+            expenseBtn.setTextColor(requireContext().getColor(R.color.textColor));
+            incomeBtn.setTextColor(requireContext().getColor(R.color.greenColor));
 
             transaction.setType(Constants.INCOME);
         });
 
-        binding.expenseBtn.setOnClickListener(view -> {
-            binding.incomeBtn.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.default_selector));
-            binding.expenseBtn.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.expense_selector));
-            binding.incomeBtn.setTextColor(requireContext().getColor(R.color.textColor));
-            binding.expenseBtn.setTextColor(requireContext().getColor(R.color.redColor));
+        expenseBtn.setOnClickListener(v -> {
+            incomeBtn.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.default_selector));
+            expenseBtn.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.expense_selector));
+            incomeBtn.setTextColor(requireContext().getColor(R.color.textColor));
+            expenseBtn.setTextColor(requireContext().getColor(R.color.redColor));
 
             transaction.setType(Constants.EXPENSE);
         });
 
-        binding.date.setOnClickListener(new View.OnClickListener() {
+        date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext());
@@ -83,76 +103,132 @@ public class AddTransactionFragment extends BottomSheetDialogFragment {
                     //SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM, yyyy");
                     String dateToShow = Helper.formatDate(calendar.getTime());
 
-                    binding.date.setText(dateToShow);
+                    date.setText(dateToShow);
 
                     transaction.setDate(calendar.getTime());
-                    transaction.setId(calendar.getTime().getTime());
                 });
                 datePickerDialog.show();
             }
         });
 
-        binding.category.setOnClickListener(c-> {
-            ListDialogBinding dialogBinding = ListDialogBinding.inflate(inflater);
+        category.setOnClickListener(c-> {
+            Utility.hideSoftKeyboard(getActivity(), view);
             AlertDialog categoryDialog = new AlertDialog.Builder(getContext()).create();
-            categoryDialog.setView(dialogBinding.getRoot());
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            View v = inflater.inflate(R.layout.list_dialog, null);
+            RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
+            categoryDialog.setView(v);
             CategoryAdapter categoryAdapter = new CategoryAdapter(getContext(), Constants.categories, new CategoryAdapter.CategoryClickListener() {
                 @Override
-                public void onCategoryClicked(Category category) {
-                    binding.category.setText(category.getCategoryName());
-                    transaction.setCategory(category.getCategoryName());
+                public void onCategoryClicked(Category ct) {
+                    category.setText(ct.getCategoryName());
+                    transaction.setCategory(ct.getCategoryName());
                     categoryDialog.dismiss();
                 }
             });
-            dialogBinding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(),3));
-            dialogBinding.recyclerView.setAdapter(categoryAdapter);
-
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(),3));
+            recyclerView.setAdapter(categoryAdapter);
+            categoryDialog.setTitle("Chọn danh mục");
             categoryDialog.show();
         });
 
-        binding.account.setOnClickListener(c-> {
-            ListDialogBinding dialogBinding = ListDialogBinding.inflate(inflater);
+        account.setOnClickListener(c-> {
+            Utility.hideSoftKeyboard(getActivity(), view);
             AlertDialog accountsDialog = new AlertDialog.Builder(getContext()).create();
-            accountsDialog.setView(dialogBinding.getRoot());
 
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            View v = inflater.inflate(R.layout.list_dialog, null);
+            accountsDialog.setView(v);
+
+            RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
             ArrayList<Account> accounts = new ArrayList<>();
-            accounts.add(new Account(0, "Tiền mặt"));
-            accounts.add(new Account(0, "Bank"));
-            accounts.add(new Account(0, "Tín dụng"));
+            accounts.add(new Account(0, "Tiền mặt", R.drawable.cash));
+            accounts.add(new Account(0, "Bank", R.drawable.bank));
+            accounts.add(new Account(0, "Tín dụng", R.drawable.credit));
 
             AccountsAdapter adapter = new AccountsAdapter(getContext(), accounts, new AccountsAdapter.AccountsClickListener() {
                 @Override
-                public void onAccountSelected(Account account) {
-                    binding.account.setText(account.getAccountName());
-                    transaction.setAccount(account.getAccountName());
+                public void onAccountSelected(Account ac) {
+                    account.setText(ac.getAccountName());
+                    transaction.setAccount(ac.getAccountName());
                     accountsDialog.dismiss();
                 }
             });
-            dialogBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             //dialogBinding.recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-            dialogBinding.recyclerView.setAdapter(adapter);
-
+            recyclerView.setAdapter(adapter);
+            accountsDialog.setTitle("Chọn phương thức thanh toán");
             accountsDialog.show();
 
         });
 
-        binding.saveTransactionBtn.setOnClickListener(c-> {
-            int amount = Integer.parseInt(Objects.requireNonNull(binding.amount.getText()).toString());
-            String note = Objects.requireNonNull(binding.note.getText()).toString();
-
-            if(transaction.getType().equals(Constants.EXPENSE)) {
-                transaction.setAmount(amount*-1);
-            } else {
-                transaction.setAmount(amount);
+        saveTransactionBtn.setOnClickListener(c-> {
+            Utility.hideSoftKeyboard(getActivity(), view);
+            if (transaction.getType() == null) {
+                Utility.showToast(getContext(), "Loại giao dịch không được để trống");
+                return;
+            }
+            if (amount.getText().toString().equals("")) {
+                Utility.showToast(getContext(), "Số tiền không được để trống");
+                return;
             }
 
-            transaction.setNote(note);
+            if (date.getText().toString().equals("")) {
+                Utility.showToast(getContext(), "Ngày không được để trống");
+                return;
+            }
 
-            ((MainActivity) requireActivity()).viewModel.addTransaction(transaction);
-            ((MainActivity) requireActivity()).getTransactions();
+            if (category.getText().toString().equals("")) {
+                Utility.showToast(getContext(), "Danh mục không được để trống");
+                return;
+            }
+
+            if (account.getText().toString().equals("")) {
+                Utility.showToast(getContext(), "Phương thức thanh toán không được để trống");
+                return;
+            }
+
+            if (note.getText().toString().equals("")) {
+                Utility.showToast(getContext(), "Ghi chú không được để trống");
+                return;
+            }
+
+            int am = Integer.parseInt(Objects.requireNonNull(amount.getText()).toString());
+            String nt = Objects.requireNonNull(note.getText()).toString();
+
+            if(transaction.getType().equals(Constants.EXPENSE)) {
+                transaction.setAmount(am*-1);
+            } else {
+                transaction.setAmount(am);
+            }
+
+            transaction.setNote(nt);
+
+            Utility.addTransaction(transaction, getContext());
+
             dismiss();
         });
-
-        return binding.getRoot();
     }
+
+    private void initView(View view) {
+        incomeBtn = view.findViewById(R.id.incomeBtn);
+        expenseBtn = view.findViewById(R.id.expenseBtn);
+
+        date = view.findViewById(R.id.date);
+        amount = view.findViewById(R.id.amount);
+
+        category = view.findViewById(R.id.category);
+        account = view.findViewById(R.id.account);
+        note = view.findViewById(R.id.note);
+        saveTransactionBtn = view.findViewById(R.id.saveTransactionBtn);
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        if (listener != null) {
+            listener.onAddedTransaction();
+        }
+    }
+
 }

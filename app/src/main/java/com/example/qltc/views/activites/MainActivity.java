@@ -2,8 +2,8 @@ package com.example.qltc.views.activites;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,76 +11,102 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.PopupMenu;
 
+import com.example.qltc.adapters.ViewPagerAdapter;
+import com.example.qltc.models.Transaction;
 import com.example.qltc.utils.Constants;
 import com.example.qltc.utils.Utility;
-import com.example.qltc.viewmodels.MainViewModel;
 import com.example.qltc.R;
-import com.example.qltc.databinding.ActivityMainBinding;
-import com.example.qltc.views.fragments.StatsFragment;
-import com.example.qltc.views.fragments.TransactionsFragment;
-import com.google.android.material.navigation.NavigationBarView;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Calendar;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
-    ActivityMainBinding binding;
-    Calendar calendar;
-    /*
-    0 = Daily
-    1 = Monthly
-    2 = Yearly
-    3 = Summary
-    4 = Notes
-     */
-    public MainViewModel viewModel;
+    private MaterialToolbar toolBar;
+    private BottomNavigationView bottomNavigationView;
+    private ViewPager viewPager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-
-        setSupportActionBar(binding.toolBar);
-        Objects.requireNonNull(getSupportActionBar()).setTitle("Chi tiêu");
-
-        Constants.setCategories();
-
-        calendar = Calendar.getInstance();
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.content, new TransactionsFragment());
-        transaction.commit();
-
-        binding.bottomNavigationView.setItemIconTintList(null);
-
-        binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+        setContentView(R.layout.activity_main);
+        initView();
+        toolBar.setTitle("Chi tiêu");
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(),
+                FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                if(item.getItemId() == R.id.transactions) {
-                    getSupportFragmentManager().popBackStack();
-                } else if(item.getItemId() == R.id.stats){
-                    transaction.replace(R.id.content, new StatsFragment());
-                    transaction.addToBackStack(null);
-                } else if(item.getItemId() == R.id.more) {
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0:
+                        bottomNavigationView.getMenu().findItem(R.id.transactions).setChecked(true);
+                        break;
+                    case 1:
+                        bottomNavigationView.getMenu().findItem(R.id.stats).setChecked(true);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.transactions) {
+                    viewPager.setCurrentItem(0);
+                } else if (id == R.id.stats) {
+                    viewPager.setCurrentItem(1);
+                } else if (id == R.id.more) {
                     showMenu();
                 }
-                transaction.commit();
                 return true;
             }
         });
 
+        Constants.setCategories();
 
-    }
+//        calendar = Calendar.getInstance();
 
-    public void getTransactions() {
-        viewModel.getTransactions(calendar);
-    }
+//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//        transaction.replace(R.id.content, new TransactionsFragment());
+//        transaction.commit();
+//
+        bottomNavigationView.setItemIconTintList(null);
 
-    public Calendar getCalendar() {
-        return calendar;
+//        Transaction transaction = new Transaction("THU", "Lương", "Bank", "TEST NOTE", Calendar.getInstance().getTime(), 100000, "123d123");
+//        createTransaction(transaction);
+
+//        binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+//            @Override
+//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//                if(item.getItemId() == R.id.transactions) {
+//                    getSupportFragmentManager().popBackStack();
+//                } else if(item.getItemId() == R.id.stats){
+//                    transaction.replace(R.id.content, new StatsFragment());
+//                    transaction.addToBackStack(null);
+//                } else if(item.getItemId() == R.id.more) {
+//                    showMenu();
+//                }
+//                transaction.commit();
+//                return true;
+//            }
+//        });
+
     }
 
     private void showMenu() {
@@ -96,6 +122,16 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
         popupMenu.show();
+    }
+
+    private void initView() {
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        viewPager = findViewById(R.id.viewPager);
+        toolBar = findViewById(R.id.toolBar);
+    }
+
+    private void createTransaction(Transaction transaction) {
+            Utility.addTransaction(transaction, this);
     }
 
     @Override

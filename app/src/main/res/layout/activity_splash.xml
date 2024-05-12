@@ -7,7 +7,7 @@
     android:background="@color/my_primary"
     android:orientation="vertical"
     android:gravity="center"
-    tools:context=".SplashActivity">
+    tools:context=".views.activites.SplashActivity">
     <TextView
         android:text="@string/app_name"
         android:textColor="@color/white"

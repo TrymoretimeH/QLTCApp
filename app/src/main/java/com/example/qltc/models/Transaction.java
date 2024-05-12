@@ -1,23 +1,24 @@
 package com.example.qltc.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
+//import io.realm.RealmObject;
+//import io.realm.annotations.PrimaryKey;
 
 
-public class Transaction extends RealmObject {
-    private String type, category, account, note;
+public class Transaction implements Serializable {
+    private String type, category = "Default", account = "Default", note;
     private Date date;
     private int amount;
 
-    @PrimaryKey
-    private long id;
+//    @PrimaryKey
+    private String id;
 
     public Transaction() {
     }
 
-    public Transaction(String type, String category, String account, String note, Date date, int amount, long id) {
+    public Transaction(String type, String category, String account, String note, Date date, int amount, String id) {
         this.type = type;
         this.category = category;
         this.account = account;
@@ -75,11 +76,11 @@ public class Transaction extends RealmObject {
         this.amount = amount;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 }

@@ -35,7 +35,13 @@ public class CreateAccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_account);
 
         initView();
-        btCreateAccount.setOnClickListener(v -> createAccount());
+        btCreateAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utility.hideSoftKeyboard(CreateAccountActivity.this, v);
+                createAccount();
+            }
+        });
         tvLogin.setOnClickListener(v -> finish());
     }
 
@@ -70,7 +76,8 @@ public class CreateAccountActivity extends AppCompatActivity {
                         } else {
 //                          failure
                             Utility.showToast(CreateAccountActivity.this,
-                                    task.getException().getLocalizedMessage());
+                                    "Tạo tài khoản thất bại!");
+                            System.out.println(task.getException().getLocalizedMessage());
                         }
                     }
                 });

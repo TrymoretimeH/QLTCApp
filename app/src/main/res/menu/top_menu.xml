@@ -3,11 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:icon="@drawable/ic_search"
+        android:icon="@drawable/search"
         android:title="Search"
         app:showAsAction="always" />
-    <item
-        android:icon="@drawable/ic_star"
-        android:title="Favorties"
-        app:showAsAction="always" />
+<!--    <item-->
+<!--        android:icon="@drawable/ic_star"-->
+<!--        android:title="Favorties"-->
+<!--        app:showAsAction="always" />-->
 </menu>

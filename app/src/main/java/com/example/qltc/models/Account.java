@@ -1,22 +1,24 @@
 package com.example.qltc.models;
 
 public class Account {
-    private double accountAmount;
+    private long accountAmount;
     private String accountName;
+    private int accountImage;
 
     public Account() {
     }
 
-    public Account(double accountAmount, String accountName) {
+    public Account(long accountAmount, String accountName, int accountImage) {
         this.accountAmount = accountAmount;
         this.accountName = accountName;
+        this.accountImage = accountImage;
     }
 
-    public double getAccountAmount() {
+    public long getAccountAmount() {
         return accountAmount;
     }
 
-    public void setAccountAmount(double accountAmount) {
+    public void setAccountAmount(long accountAmount) {
         this.accountAmount = accountAmount;
     }
 
@@ -26,5 +28,13 @@ public class Account {
 
     public void setAccountName(String accountName) {
         this.accountName = accountName;
+    }
+
+    public int getAccountImage() {
+        return accountImage;
+    }
+
+    public void setAccountImage(int accountImage) {
+        this.accountImage = accountImage;
     }
 }

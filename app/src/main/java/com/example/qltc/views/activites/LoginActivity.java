@@ -39,7 +39,13 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         initView();
 
-        btLogin.setOnClickListener(v -> loginUser());
+        btLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utility.hideSoftKeyboard(LoginActivity.this, v);
+                loginUser();
+            }
+        });
         tvSignup.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this,
                 CreateAccountActivity.class)));
 
@@ -68,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
 //                    login successful
                     if (Objects.requireNonNull(firebaseAuth.getCurrentUser()).isEmailVerified()) {
 //                        go to main activity
+                        Utility.showToast(LoginActivity.this, "Đăng nhập thành công!");
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         finish();
                     } else {

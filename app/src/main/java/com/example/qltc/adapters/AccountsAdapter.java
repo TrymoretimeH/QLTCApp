@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,7 +43,8 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
     @Override
     public void onBindViewHolder(@NonNull AccountsViewHolder holder, int position) {
         Account account = accountArrayList.get(position);
-        holder.binding.accountName.setText(account.getAccountName());
+        holder.accountName.setText(account.getAccountName());
+        holder.accountIcon.setImageResource(account.getAccountImage());
         holder.itemView.setOnClickListener(c-> {
             accountsClickListener.onAccountSelected(account);
         });
@@ -54,11 +57,12 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
 
     public class AccountsViewHolder extends RecyclerView.ViewHolder {
 
-        RowAccountBinding binding;
-
+        private ImageView accountIcon;
+        private TextView accountName;
         public AccountsViewHolder(@NonNull View itemView) {
             super(itemView);
-            binding = RowAccountBinding.bind(itemView);
+            accountIcon = itemView.findViewById(R.id.accountIcon);
+            accountName = itemView.findViewById(R.id.accountName);
         }
     }
 }

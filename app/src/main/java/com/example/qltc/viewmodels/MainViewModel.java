@@ -21,31 +21,35 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
-import io.realm.RealmResults;
-import io.realm.internal.Util;
+//import io.realm.Realm;
+//import io.realm.RealmConfiguration;
+//import io.realm.RealmResults;
+//import io.realm.internal.Util;
 
 public class MainViewModel extends AndroidViewModel {
 
-    public MutableLiveData<RealmResults<Transaction>> transactions = new MutableLiveData<>();
-    public MutableLiveData<RealmResults<Transaction>> categoriesTransactions = new MutableLiveData<>();
+    public MutableLiveData<List<Transaction>> transactions = new MutableLiveData<>();
+    //    public MutableLiveData<RealmResults<Transaction>> transactions = new MutableLiveData<>();
+    public MutableLiveData<List<Transaction>> categoriesTransactions = new MutableLiveData<>();
+//    public MutableLiveData<RealmResults<Transaction>> categoriesTransactions = new MutableLiveData<>();
 
     public MutableLiveData<Integer> totalIncome = new MutableLiveData<>();
     public MutableLiveData<Integer> totalExpense = new MutableLiveData<>();
     public MutableLiveData<Integer> totalAmount = new MutableLiveData<>();
 
-//    public Query query;
-//    public FirestoreRecyclerOptions<Transaction> options;
-    private RealmResults<Transaction> newTransactions = null;
+    public Query query;
+    public FirestoreRecyclerOptions<Transaction> options;
+    private List<Transaction> newTransactions = new ArrayList<>();
+//    private RealmResults<Transaction> newTransactions = null;
+
     private int income = 0, expense = 0, total = 0;
-    Realm realm;
+    //    Realm realm;
     Calendar calendar;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-        Realm.init(application);
-        setupDatabase();
+//        Realm.init(application);
+//        setupDatabase();
     }
 
     public void getTransactions(Calendar calendar, String type) {
@@ -55,19 +59,23 @@ public class MainViewModel extends AndroidViewModel {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        if(Constants.SELECTED_TAB_STATS == Constants.DAILY) {
-//            query = Utility.getTransactions()
+        if (Constants.SELECTED_TAB_STATS == Constants.DAILY) {
+//            query = Utility.getTransactionsFromCurrentUser()
 //                    .whereEqualTo("type", type)
 //                    .whereGreaterThanOrEqualTo("date", calendar.getTime())
 //                    .whereLessThan("date",
-//                            new Date(calendar.getTime().getTime() + (24 * 60 * 60 * 1000)));
+//                            new Date(calendar.getTime().getTime() + (24 * 60 * 60 * 1000)))
+//                    .orderBy("date", Query.Direction.DESCENDING);
 //            options = new FirestoreRecyclerOptions.Builder<Transaction>()
 //                    .setQuery(query, Transaction.class)
 //                    .build();
 //            query.get().addOnCompleteListener(
 //                    task -> {
 //                        if (task.isSuccessful()) {
-//                            newTransactions = task.getResult().getDocuments();
+//                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                newTransactions.add(document.toObject(Transaction.class));
+//                            }
+////                            newTransactions =  task.getResult().getDocuments();
 //                        } else {
 //                            Exception e = task.getException();
 //                            e.printStackTrace();
@@ -75,44 +83,49 @@ public class MainViewModel extends AndroidViewModel {
 //                    }
 //            );
 
-            newTransactions = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", calendar.getTime())
-                    .lessThan("date", new Date(calendar.getTime().getTime() + (24 * 60 * 60 * 1000)))
-                    .equalTo("type", type)
-                    .findAll();
+//            newTransactions = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", calendar.getTime())
+//                    .lessThan("date", new Date(calendar.getTime().getTime() + (24 * 60 * 60 * 1000)))
+//                    .equalTo("type", type)
+//                    .findAll();
 
-        } else if(Constants.SELECTED_TAB_STATS == Constants.MONTHLY) {
-            calendar.set(Calendar.DAY_OF_MONTH,0);
+        } else if (Constants.SELECTED_TAB_STATS == Constants.MONTHLY) {
+            calendar.set(Calendar.DAY_OF_MONTH, 0);
 
             Date startTime = calendar.getTime();
 
 
-            calendar.add(Calendar.MONTH,1);
+            calendar.add(Calendar.MONTH, 1);
             Date endTime = calendar.getTime();
 
-//            query = Utility.getTransactions()
+//            query = Utility.getTransactionsFromCurrentUser()
 //                    .whereEqualTo("type", type)
 //                    .whereGreaterThanOrEqualTo("date", startTime)
-//                    .whereLessThan("date", endTime);
+//                    .whereLessThan("date", endTime)
+//                    .orderBy("date", Query.Direction.DESCENDING);
 //            options = new FirestoreRecyclerOptions.Builder<Transaction>()
 //                    .setQuery(query, Transaction.class)
 //                    .build();
 //            query.get().addOnCompleteListener(
 //                    task -> {
 //                        if (task.isSuccessful()) {
-//                            newTransactions = task.getResult().getDocuments();
+//                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                newTransactions.add(document.toObject(Transaction.class));
+//                            }
+////                            newTransactions =  task.getResult().getDocuments();
 //                        } else {
 //                            Exception e = task.getException();
 //                            e.printStackTrace();
 //                        }
 //                    }
 //            );
-            newTransactions = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", startTime)
-                    .lessThan("date", endTime)
-                    .equalTo("type", type)
-                    .findAll();
-        } else if(Constants.SELECTED_TAB == Constants.YEARLY) {
+
+//            newTransactions = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", startTime)
+//                    .lessThan("date", endTime)
+//                    .equalTo("type", type)
+//                    .findAll();
+        } else if (Constants.SELECTED_TAB == Constants.YEARLY) {
             calendar.set(Calendar.DAY_OF_YEAR, 0);
 
             Date startTime = calendar.getTime();
@@ -120,10 +133,34 @@ public class MainViewModel extends AndroidViewModel {
             calendar.add(Calendar.YEAR, 1);
             Date endTime = calendar.getTime();
 
-            newTransactions = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", startTime)
-                    .lessThan("date", endTime)
-                    .findAll();
+//            query = Utility.getTransactionsFromCurrentUser()
+//                    .whereEqualTo("type", type)
+//                    .whereGreaterThanOrEqualTo("date", startTime)
+//                    .whereLessThan("date", endTime)
+//                    .orderBy("date", Query.Direction.DESCENDING);
+//
+//            options = new FirestoreRecyclerOptions.Builder<Transaction>()
+//                    .setQuery(query, Transaction.class)
+//                    .build();
+//
+//            query.get().addOnCompleteListener(
+//                    task -> {
+//                        if (task.isSuccessful()) {
+//                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                newTransactions.add(document.toObject(Transaction.class));
+//                            }
+////                            newTransactions =  task.getResult().getDocuments();
+//                        } else {
+//                            Exception e = task.getException();
+//                            e.printStackTrace();
+//                        }
+//                    }
+//            );
+
+//            newTransactions = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", startTime)
+//                    .lessThan("date", endTime)
+//                    .findAll();
         }
         categoriesTransactions.setValue(newTransactions);
     }
@@ -135,77 +172,80 @@ public class MainViewModel extends AndroidViewModel {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        if(Constants.SELECTED_TAB == Constants.DAILY) {
-//            query = Utility.getTransactions()
+        if (Constants.SELECTED_TAB == Constants.DAILY) {
+//            query = Utility.getTransactionsFromCurrentUser()
 //                    .whereGreaterThanOrEqualTo("date", calendar.getTime())
-//                    .whereLessThan("date", new Date(calendar.getTime().getTime() + (24 * 60 * 60 * 1000)));
+//                    .whereLessThan("date", new Date(calendar.getTime().getTime() + (24 * 60 * 60 * 1000)))
+//                    .orderBy("date", Query.Direction.DESCENDING);
 //            options = new FirestoreRecyclerOptions.Builder<Transaction>()
 //                    .setQuery(query, Transaction.class)
 //                    .build();
 //            query.get().addOnCompleteListener(task -> {
 //                if (task.isSuccessful()) {
 //                    System.out.println("QUERY CHECKER DAILY: " + task.getResult().getDocuments().size());
-//                    newTransactions = task.getResult().getDocuments();
-//
-//                    for (DocumentSnapshot document : newTransactions) {
+//                    for (QueryDocumentSnapshot document : task.getResult()) {
 //                        Transaction transaction = document.toObject(Transaction.class);
-//                        assert transaction != null;
+//                        newTransactions.add(transaction);
 //                        if (transaction.getType().equals(Constants.INCOME)) {
 //                            income += transaction.getAmount();
 //                        } else {
 //                            expense += transaction.getAmount();
 //                        }
-//                        total+= transaction.getAmount();
+//                        total += transaction.getAmount();
 //                    }
+////                            newTransactions =  task.getResult().getDocuments();
 //                } else {
 //                    Exception e = task.getException();
 //                    e.printStackTrace();
 //                }
 //            });
-            newTransactions = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", calendar.getTime())
-                    .lessThan("date", new Date(calendar.getTime().getTime() + (24 * 60 * 60 * 1000)))
-                    .findAll();
 
-            income = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", calendar.getTime())
-                    .lessThan("date", new Date(calendar.getTime().getTime() + (24 * 60 * 60 * 1000)))
-                    .equalTo("type", Constants.INCOME)
-                    .sum("amount")
-                    .intValue();
-
-            expense = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", calendar.getTime())
-                    .lessThan("date", new Date(calendar.getTime().getTime() + (24 * 60 * 60 * 1000)))
-                    .equalTo("type", Constants.EXPENSE)
-                    .sum("amount")
-                    .intValue();
-
-            total = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", calendar.getTime())
-                    .lessThan("date", new Date(calendar.getTime().getTime() + (24 * 60 * 60 * 1000)))
-                    .sum("amount")
-                    .intValue();
-        } else if(Constants.SELECTED_TAB == Constants.MONTHLY) {
-            calendar.set(Calendar.DAY_OF_MONTH,0);
+//            newTransactions = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", calendar.getTime())
+//                    .lessThan("date", new Date(calendar.getTime().getTime() + (24 * 60 * 60 * 1000)))
+//                    .findAll();
+//
+//            income = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", calendar.getTime())
+//                    .lessThan("date", new Date(calendar.getTime().getTime() + (24 * 60 * 60 * 1000)))
+//                    .equalTo("type", Constants.INCOME)
+//                    .sum("amount")
+//                    .intValue();
+//
+//            expense = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", calendar.getTime())
+//                    .lessThan("date", new Date(calendar.getTime().getTime() + (24 * 60 * 60 * 1000)))
+//                    .equalTo("type", Constants.EXPENSE)
+//                    .sum("amount")
+//                    .intValue();
+//
+//            total = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", calendar.getTime())
+//                    .lessThan("date", new Date(calendar.getTime().getTime() + (24 * 60 * 60 * 1000)))
+//                    .sum("amount")
+//                    .intValue();
+        } else if (Constants.SELECTED_TAB == Constants.MONTHLY) {
+            calendar.set(Calendar.DAY_OF_MONTH, 0);
 
             Date startTime = calendar.getTime();
 
-            calendar.add(Calendar.MONTH,1);
+            calendar.add(Calendar.MONTH, 1);
             Date endTime = calendar.getTime();
 
-//            query = Utility.getTransactions()
+//            query = Utility.getTransactionsFromCurrentUser()
 //                    .whereGreaterThanOrEqualTo("date", startTime)
-//                    .whereLessThan("date", endTime);
+//                    .whereLessThan("date", endTime)
+//                    .orderBy("date", Query.Direction.DESCENDING);
 //            options = new FirestoreRecyclerOptions.Builder<Transaction>()
 //                    .setQuery(query, Transaction.class)
 //                    .build();
 //            query.get().addOnCompleteListener(task -> {
 //                if (task.isSuccessful()) {
-//                    newTransactions = task.getResult().getDocuments();
-//                    System.out.println("QUERY CHECKER MONTH: " + task.getResult().getDocuments().size());
-//                    for (DocumentSnapshot document : newTransactions) {
+//                    System.out.println("QUERY CHECKER MONTHLY: " + task.getResult().getDocuments().size());
+//
+//                    for (DocumentSnapshot document : task.getResult()) {
 //                        Transaction transaction = document.toObject(Transaction.class);
+//                        newTransactions.add(transaction);
 //                        assert transaction != null;
 //                        if (transaction.getType().equals(Constants.INCOME)) {
 //                            income += transaction.getAmount();
@@ -219,62 +259,91 @@ public class MainViewModel extends AndroidViewModel {
 //                    e.printStackTrace();
 //                }
 //            });
-            newTransactions = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", startTime)
-                    .lessThan("date", endTime)
-                    .findAll();
 
-            income = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", startTime)
-                    .lessThan("date", endTime)
-                    .equalTo("type", Constants.INCOME)
-                    .sum("amount")
-                    .intValue();
+//            newTransactions = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", startTime)
+//                    .lessThan("date", endTime)
+//                    .findAll();
 
-            expense = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", startTime)
-                    .lessThan("date", endTime)
-                    .equalTo("type", Constants.EXPENSE)
-                    .sum("amount")
-                    .intValue();
-
-            total = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", startTime)
-                    .lessThan("date", endTime)
-                    .sum("amount")
-                    .intValue();
-        } else if(Constants.SELECTED_TAB == Constants.YEARLY) {
-            calendar.set(Calendar.DAY_OF_YEAR,0);
+//            income = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", startTime)
+//                    .lessThan("date", endTime)
+//                    .equalTo("type", Constants.INCOME)
+//                    .sum("amount")
+//                    .intValue();
+//
+//            expense = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", startTime)
+//                    .lessThan("date", endTime)
+//                    .equalTo("type", Constants.EXPENSE)
+//                    .sum("amount")
+//                    .intValue();
+//
+//            total = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", startTime)
+//                    .lessThan("date", endTime)
+//                    .sum("amount")
+//                    .intValue();
+        } else if (Constants.SELECTED_TAB == Constants.YEARLY) {
+            calendar.set(Calendar.DAY_OF_YEAR, 0);
 
             Date startTime = calendar.getTime();
 
-            calendar.add(Calendar.YEAR,1);
+            calendar.add(Calendar.YEAR, 1);
             Date endTime = calendar.getTime();
 
-            newTransactions = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", startTime)
-                    .lessThan("date", endTime)
-                    .findAll();
+//            query = Utility.getTransactionsFromCurrentUser()
+//                    .whereGreaterThanOrEqualTo("date", startTime)
+//                    .whereLessThan("date", endTime)
+//                    .orderBy("date", Query.Direction.DESCENDING);
+//            options = new FirestoreRecyclerOptions.Builder<Transaction>()
+//                    .setQuery(query, Transaction.class)
+//                    .build();
+//            query.get().addOnCompleteListener(task -> {
+//                if (task.isSuccessful()) {
+//                    System.out.println("QUERY CHECKER YEARLY: " + task.getResult().getDocuments().size());
+//
+//                    for (DocumentSnapshot document : task.getResult()) {
+//                        Transaction transaction = document.toObject(Transaction.class);
+//                        newTransactions.add(transaction);
+//                        assert transaction != null;
+//                        if (transaction.getType().equals(Constants.INCOME)) {
+//                            income += transaction.getAmount();
+//                        } else {
+//                            expense += transaction.getAmount();
+//                        }
+//                        total += transaction.getAmount();
+//                    }
+//                } else {
+//                    Exception e = task.getException();
+//                    e.printStackTrace();
+//                }
+//            });
 
-            income = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", startTime)
-                    .lessThan("date", endTime)
-                    .equalTo("type", Constants.INCOME)
-                    .sum("amount")
-                    .intValue();
-
-            expense = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", startTime)
-                    .lessThan("date", endTime)
-                    .equalTo("type", Constants.EXPENSE)
-                    .sum("amount")
-                    .intValue();
-
-            total = realm.where(Transaction.class)
-                    .greaterThanOrEqualTo("date", startTime)
-                    .lessThan("date", endTime)
-                    .sum("amount")
-                    .intValue();
+//            newTransactions = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", startTime)
+//                    .lessThan("date", endTime)
+//                    .findAll();
+//
+//            income = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", startTime)
+//                    .lessThan("date", endTime)
+//                    .equalTo("type", Constants.INCOME)
+//                    .sum("amount")
+//                    .intValue();
+//
+//            expense = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", startTime)
+//                    .lessThan("date", endTime)
+//                    .equalTo("type", Constants.EXPENSE)
+//                    .sum("amount")
+//                    .intValue();
+//
+//            total = realm.where(Transaction.class)
+//                    .greaterThanOrEqualTo("date", startTime)
+//                    .lessThan("date", endTime)
+//                    .sum("amount")
+//                    .intValue();
         }
 
         totalIncome.setValue(income);
@@ -288,75 +357,65 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public void addTransaction(Transaction transaction) {
-//        DocumentReference documentReference = Utility.getTransactions().document();
-//        documentReference.set(transaction).addOnCompleteListener(
-//                task -> {
-//                    if (task.isSuccessful()) {
-//                        Utility.showToast(getApplication().getApplicationContext(),
-//                                "Thêm chi tiêu/thu nhập thành công");
-//                        getTransactions(calendar);
-//                    } else {
-//                        Utility.showToast(getApplication().getApplicationContext(),
-//                                "Thêm chi tiêu/thu nhập thất bại");
-//                    }
-//                }
-//        );
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(transaction);
-        // some code here
-        realm.commitTransaction();
-        Utility.showToast(getApplication().getApplicationContext(), "Thêm chi tiêu/thu nhập thành công");
+        DocumentReference documentReference = Utility.getTransactionsFromCurrentUser().document();
+        documentReference.set(transaction).addOnCompleteListener(
+                task -> {
+                    if (task.isSuccessful()) {
+                        Utility.showToast(getApplication().getApplicationContext(),
+                                "Thêm chi tiêu/thu nhập thành công");
+                        getTransactions(calendar);
+                    } else {
+                        Utility.showToast(getApplication().getApplicationContext(),
+                                "Thêm chi tiêu/thu nhập thất bại");
+                    }
+                }
+        );
+
+//        realm.beginTransaction();
+//        realm.copyToRealmOrUpdate(transaction);
+//        // some code here
+//        realm.commitTransaction();
+//        Utility.showToast(getApplication().getApplicationContext(), "Thêm chi tiêu/thu nhập thành công");
     }
 
     public void updateTransaction(Transaction transaction, String docId) {
-//        DocumentReference documentReference = Utility.getTransactions().document(docId);
-//        documentReference.set(transaction).addOnCompleteListener(
-//                task -> {
-//                    if (task.isSuccessful()) {
-//                        Utility.showToast(getApplication().getApplicationContext(),
-//                                "Sửa chi tiêu/thu nhập thành công");
-//                        getTransactions(calendar);
-//                    } else {
-//                        Utility.showToast(getApplication().getApplicationContext(),
-//                                "Sửa chi tiêu/thu nhập thất bại");
-//                    }
-//                }
-//
-//        );
-//        getTransactions(calendar);
+        DocumentReference documentReference = Utility.getTransactionsFromCurrentUser().document(docId);
+        documentReference.set(transaction).addOnCompleteListener(
+                task -> {
+                    if (task.isSuccessful()) {
+                        Utility.showToast(getApplication().getApplicationContext(),
+                                "Sửa chi tiêu/thu nhập thành công");
+                        getTransactions(calendar);
+                    } else {
+                        Utility.showToast(getApplication().getApplicationContext(),
+                                "Sửa chi tiêu/thu nhập thất bại");
+                    }
+                }
+
+        );
+        getTransactions(calendar);
         Utility.showToast(getApplication().getApplicationContext(), "Sửa chi tiêu/thu nhập thành công");
     }
 
-    public void deleteTransaction(Transaction transaction) {
-//        DocumentReference documentReference = Utility.getTransactions().document(docId);
-//        documentReference.delete().addOnCompleteListener(
-//                task -> {
-//                    if (task.isSuccessful()) {
-//                        Utility.showToast(getApplication().getApplicationContext(),
-//                                "Xóa chi tiêu/thu nhập thành công");
-//                        getTransactions(calendar);
-//                    } else {
-//                        Utility.showToast(getApplication().getApplicationContext(),
-//                                "Xóa chi tiêu/thu nhập thất bại");
-//                    }
-//                }
-//
-//        );
-        realm.beginTransaction();
-        transaction.deleteFromRealm();
-        realm.commitTransaction();
-        Utility.showToast(getApplication().getApplicationContext(), "Xóa chi tiêu/thu nhập thành công");
-        getTransactions(calendar);
-    }
+//    public void deleteTransaction(Transaction transaction) {
+
+
+//        realm.beginTransaction();
+//        transaction.deleteFromRealm();
+//        realm.commitTransaction();
+//        Utility.showToast(getApplication().getApplicationContext(), "Xóa chi tiêu/thu nhập thành công");
+//        getTransactions(calendar);
+//}
 
     void setupDatabase() {
 //        Realm config if somethings changed
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .schemaVersion(1)
-                .migration(new QLTCMigration())
-                .build();
-        Realm.setDefaultConfiguration(config);
-        realm = Realm.getDefaultInstance();
+//        RealmConfiguration config = new RealmConfiguration.Builder()
+//                .schemaVersion(1)
+//                .migration(new QLTCMigration())
+//                .build();
+//        Realm.setDefaultConfiguration(config);
+//        Realm.deleteRealm(config);
+//        realm = Realm.getDefaultInstance();
     }
 
 }
